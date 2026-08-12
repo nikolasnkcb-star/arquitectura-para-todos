@@ -46,12 +46,16 @@ function navTo(sectionId) {
     if (el) {
       if (id === sectionId) {
         el.classList.remove('hidden');
+        el.classList.add('active-view');
       } else if (sectionId === 'heroSection' && (id === 'processSection' || id === 'reviewsSection' || id === 'landingPricing')) {
         el.classList.remove('hidden');
+        el.classList.add('active-view');
       } else if (sectionId === 'conversionSection' && id === 'landingPricing') {
         el.classList.remove('hidden');
+        el.classList.add('active-view');
       } else {
         el.classList.add('hidden');
+        el.classList.remove('active-view');
       }
     }
   });

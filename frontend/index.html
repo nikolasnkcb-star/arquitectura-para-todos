@@ -41,7 +41,7 @@
         <button class="btn btn-primary btn-lg" onclick="startFreeStage()">
           EMPIEZA GRATIS <span class="arrow">→</span>
         </button>
-        <a href="#landingPricing" class="btn btn-secondary btn-lg">Ver Paquetes Profesionales</a>
+        <button onclick="startFreeStage()" class="btn btn-secondary btn-lg">Ver Paquetes Profesionales</button>
       </div>
       <div class="hero-guarantee">
         <span>✓ Arquitectura local y consciente</span>
@@ -437,19 +437,19 @@
       <div class="checkout-summary">
         <div class="summary-row">
           <span>Paquete Actual:</span>
-          <strong>BASIC (S/500)</strong>
+          <strong>BASIC (S/250)</strong>
         </div>
         <div class="summary-row">
           <span>Ya pagaste:</span>
-          <strong id="upgradeOriginalPaid">S/500</strong>
+          <strong id="upgradeOriginalPaid">S/250</strong>
         </div>
         <div class="summary-row">
           <span>Precio Paquete Premium:</span>
-          <strong id="upgradePremiumPrice">S/900</strong>
+          <strong id="upgradePremiumPrice">S/450</strong>
         </div>
         <div class="summary-row total-row">
           <span>SOLO DEBES PAGAR LA DIFERENCIA:</span>
-          <strong id="upgradeDiffPrice" class="total-price gold-text">S/400</strong>
+          <strong id="upgradeDiffPrice" class="total-price gold-text">S/200</strong>
         </div>
       </div>
 
@@ -465,8 +465,8 @@
       </div>
 
       <div class="checkout-actions">
-        <button class="btn btn-primary btn-lg btn-block" onclick="processUpgradePaymentSimulated('PAID')">
-          ⚡ ACTUALIZAR A PREMIUM (PAGAR S/<span id="btnUpgradeAmount">400</span>) →
+        <button class="btn btn-primary btn-block" onclick="processUpgradePaymentSimulated('PAID')">
+          💳 ACTUALIZAR A PREMIUM (PAGAR S/<span id="btnUpgradeAmount">200</span>)  
         </button>
       </div>
     </div>
@@ -506,10 +506,10 @@
           <h3>Tu proyecto está avanzando.</h3>
           <p>Con Premium puedes desarrollar la volumetría completa, visualizar tu casa en vista conceptual interactiva y obtener un recorrido en video de la propuesta.</p>
           <div class="promo-price-comparison">
-            <span>BASIC S/<span id="promoBasicPrice">500</span> (Ya pagaste S/<span id="promoPaidPrice">500</span>)</span>
+            <span>BASIC S/<span id="promoBasicPrice">250</span> (Ya pagaste S/<span id="promoPaidPrice">250</span>)</span>
             <span class="vs">vs</span>
-            <strong>PREMIUM S/<span id="promoPremiumPrice">900</span></strong>
-            <span class="diff-badge">Actualización disponible por S/<span id="promoDiffPrice">400</span></span>
+            <strong>PREMIUM S/<span id="promoPremiumPrice">450</span></strong>
+            <span class="diff-badge">Actualización disponible por S/<span id="promoDiffPrice">200</span></span>
           </div>
         </div>
         <div class="promo-action">
@@ -600,9 +600,10 @@
           <span class="badge-sm premium-badge">EXCLUSIVO PREMIUM</span>
         </div>
         <p class="muted" style="margin-top: 0.5rem; font-size: 0.9rem;">Explora el volumen conceptual de tu vivienda en nuestra vista interactiva de prototipo. Usa los controles para rotar o hacer zoom.</p>
-        <div class="viewer-3d-canvas-box">
-          <canvas id="canvas3D" width="800" height="400"></canvas>
-          <div class="viewer-controls-bar">
+        <div style="width: 100%; max-width: 800px; margin: 0 auto; overflow: hidden;">
+          <canvas id="canvas3D" width="800" height="400" style="width: 100%; height: auto;"></canvas>
+        </div>
+        <div class="viewer-controls-bar">
             <button class="btn btn-sm btn-outline" onclick="control3D('rotate')">↺ Rotar Modelo</button>
             <button class="btn btn-sm btn-outline" onclick="control3D('zoomIn')">➕ Zoom In</button>
             <button class="btn btn-sm btn-outline" onclick="control3D('zoomOut')">➖ Zoom Out</button>
