@@ -250,6 +250,9 @@ const server = http.createServer(async (req, res) => {
 
     // Flujo real MercadoPago
     try {
+      const baseUrl = process.env.APP_URL || (req.headers.host ? `https://${req.headers.host}` : 'http://localhost:3000');
+      const webhookUrl = process.env.WEBHOOK_BASE_URL ? `${process.env.WEBHOOK_BASE_URL}/api/webhooks/payments` : (req.headers.host ? `https://${req.headers.host}/api/webhooks/payments` : undefined);
+
       const prefBody = {
         items: [{
           id: project.project_package,
@@ -261,12 +264,12 @@ const server = http.createServer(async (req, res) => {
         payer: { name: project.client_name, email: project.client_email },
         metadata: { project_id: project.id, type: 'NEW_PACKAGE' },
         back_urls: {
-          success: process.env.APP_URL || 'http://localhost:3000',
-          failure: process.env.APP_URL || 'http://localhost:3000',
-          pending: process.env.APP_URL || 'http://localhost:3000'
+          success: baseUrl,
+          failure: baseUrl,
+          pending: baseUrl
         },
         auto_return: 'approved',
-        notification_url: process.env.WEBHOOK_BASE_URL ? `${process.env.WEBHOOK_BASE_URL}/api/webhooks/payments` : undefined
+        notification_url: webhookUrl
       };
       const preference = await mpPreference.create({ body: prefBody });
       return sendJson(res, 200, { success: true, init_point: preference.init_point });
@@ -323,6 +326,9 @@ const server = http.createServer(async (req, res) => {
       const originalPaid = project.package_price_original || (project.project_package === 'BASIC' ? project.package_price : CONFIG.BASIC_PRICE);
       const upgradePrice = Math.max(0, CONFIG.PREMIUM_PRICE - originalPaid);
       
+      const baseUrl = process.env.APP_URL || (req.headers.host ? `https://${req.headers.host}` : 'http://localhost:3000');
+      const webhookUrl = process.env.WEBHOOK_BASE_URL ? `${process.env.WEBHOOK_BASE_URL}/api/webhooks/payments` : (req.headers.host ? `https://${req.headers.host}/api/webhooks/payments` : undefined);
+
       const prefBody = {
         items: [{
           id: 'UPGRADE_PREMIUM',
@@ -334,12 +340,12 @@ const server = http.createServer(async (req, res) => {
         payer: { name: project.client_name, email: project.client_email },
         metadata: { project_id: project.id, type: 'UPGRADE' },
         back_urls: {
-          success: process.env.APP_URL || 'http://localhost:3000',
-          failure: process.env.APP_URL || 'http://localhost:3000',
-          pending: process.env.APP_URL || 'http://localhost:3000'
+          success: baseUrl,
+          failure: baseUrl,
+          pending: baseUrl
         },
         auto_return: 'approved',
-        notification_url: process.env.WEBHOOK_BASE_URL ? `${process.env.WEBHOOK_BASE_URL}/api/webhooks/payments` : undefined
+        notification_url: webhookUrl
       };
       const preference = await mpPreference.create({ body: prefBody });
       return sendJson(res, 200, { success: true, init_point: preference.init_point });

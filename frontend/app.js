@@ -40,15 +40,17 @@ async function initConfig() {
 
 // Navegación de Secciones SPA
 function navTo(sectionId) {
-  const sections = ['heroSection', 'freeStage', 'conversionSection', 'landingPricing', 'clientDashboard', 'adminPanel'];
+  const sections = ['heroSection', 'freeStage', 'conversionSection', 'landingPricing', 'clientDashboard', 'adminPanel', 'processSection', 'reviewsSection'];
   sections.forEach(id => {
     const el = document.getElementById(id);
     if (el) {
       if (id === sectionId) {
         el.classList.remove('hidden');
-      } else if (sectionId !== 'heroSection' && id === 'landingPricing') {
-        if (sectionId === 'conversionSection') el.classList.remove('hidden');
-      } else if (id !== sectionId) {
+      } else if (sectionId === 'heroSection' && (id === 'processSection' || id === 'reviewsSection' || id === 'landingPricing')) {
+        el.classList.remove('hidden');
+      } else if (sectionId === 'conversionSection' && id === 'landingPricing') {
+        el.classList.remove('hidden');
+      } else {
         el.classList.add('hidden');
       }
     }
