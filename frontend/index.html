@@ -22,7 +22,7 @@
       <nav class="nav-links">
         <a href="#landingPricing" onclick="navTo('landingPricing')">Paquetes</a>
         <a href="#freeStage" onclick="startFreeStage()" class="btn-sm btn-outline">Etapa Gratuita</a>
-        <a href="#clientDashboard" onclick="openClientDashboard()" class="nav-link-dashboard">Mi Proyecto</a>
+        <a href="#" onclick="openLoginModal()" class="btn-sm btn-primary" style="color:white; border:none; padding: 0.4rem 1rem; border-radius: 6px;">Mi Cuenta</a>
         <a href="#adminPanel" onclick="openAdminPanel()" class="nav-link-admin">Panel Admin</a>
       </nav>
     </div>
@@ -724,15 +724,16 @@
     <div class="footer-container">
       <p>© 2026 Arquitectura Para Todos — Arqui IA. Todos los derechos reservados.</p>
       <p class="legal-note">Modelo Comercial 2.0: Paquetes Profesionales BASIC (S/<span id="footerBasicPrice">500</span>) y PREMIUM (S/<span id="footerPremiumPrice">900</span>).</p>
+      <button class="btn btn-sm btn-outline" onclick="openLoginModal()" style="margin-top: 1rem;">Mi Cuenta</button>
     </div>
   </footer>
 
-  <!-- WHATSAPP CAPTURE MODAL -->
+  <!-- MODAL DE WHATSAPP (LEAD CAPTURE) -->
   <div id="whatsappModal" class="modal-overlay">
     <div class="modal-content">
-      <div style="font-size: 3rem; margin-bottom: 1rem;">🎉</div>
-      <h3>¡Ficha de Anteproyecto Lista!</h3>
-      <p>Déjanos tu Nombre y WhatsApp para enviarte tu propuesta conceptual gratuita y ponernos en contacto por ese medio.</p>
+      <h3>¡Ficha Técnica Completada!</h3>
+      <p>Arqui IA ha terminado de analizar tu proyecto. Ingresa tu nombre y número de celular (WhatsApp) para guardar tu progreso y ver la propuesta.</p>
+      
       <form id="whatsappForm" class="modal-form" onsubmit="handleWhatsappSubmit(event)">
         <div class="form-group">
           <label for="waName">Tu Nombre Completo</label>
@@ -743,6 +744,26 @@
           <input type="tel" id="waPhone" value="+51" placeholder="+51 999 999 999" required>
         </div>
         <button type="submit" class="btn btn-primary btn-block">Ver mi Ficha Ahora →</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL DE LOGIN (MI CUENTA) -->
+  <div id="loginModal" class="modal-overlay">
+    <div class="modal-content">
+      <button class="modal-close" style="position: absolute; top: 1rem; right: 1rem; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--color-text-muted);" onclick="closeLoginModal()">×</button>
+      <h3 style="margin-bottom: 0.5rem; font-family: var(--font-primary);">Accede a tu Proyecto</h3>
+      <p style="margin-bottom: 1.5rem; font-size: 0.95rem; color: var(--color-text-muted);">Ingresa el número de WhatsApp con el que registraste tu terreno para continuar.</p>
+      
+      <form id="loginForm" class="modal-form" onsubmit="handleLoginSubmit(event)">
+        <div class="form-group">
+          <label for="loginPhone">Número de Celular / WhatsApp</label>
+          <input type="tel" id="loginPhone" value="+51" placeholder="+51 999 888 777" required style="border: 1px solid var(--color-border); padding: 0.8rem; border-radius: 8px; width: 100%;">
+        </div>
+        <div id="loginError" style="color: var(--color-danger); font-size: 0.85rem; margin-bottom: 1rem; display: none;"></div>
+        <button type="submit" class="btn btn-primary btn-block">
+          Ingresar →
+        </button>
       </form>
     </div>
   </div>

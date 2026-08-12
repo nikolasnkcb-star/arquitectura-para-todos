@@ -192,6 +192,19 @@ const server = http.createServer(async (req, res) => {
     });
   }
 
+  // 3.5 BUSCAR PROYECTO POR NÚMERO (LOGIN)
+  if (pathname === '/api/projects/lookup' && method === 'GET') {
+    const phone = url.parse(req.url, true).query.phone;
+    if (!phone) {
+      return sendJson(res, 400, { success: false, error: "El número de teléfono es requerido." });
+    }
+    const project = db.getProjectByPhone(phone);
+    if (!project) {
+      return sendJson(res, 404, { success: false, error: "No se encontró ningún proyecto asociado a este número." });
+    }
+    return sendJson(res, 200, { success: true, project });
+  }
+
   // 4. CREAR PROYECTO
   if (pathname === '/api/projects/create' && method === 'POST') {
     const body = await parseBody(req);

@@ -903,6 +903,53 @@ function showWhatsAppModal() {
   }
 }
 
+function openLoginModal() {
+  const modal = document.getElementById('loginModal');
+  if (modal) {
+    modal.classList.add('active');
+    document.getElementById('loginError').style.display = 'none';
+  }
+}
+
+function closeLoginModal() {
+  const modal = document.getElementById('loginModal');
+  if (modal) {
+    modal.classList.remove('active');
+  }
+}
+
+async function handleLoginSubmit(event) {
+  event.preventDefault();
+  const phone = document.getElementById('loginPhone').value;
+  const errorDiv = document.getElementById('loginError');
+  errorDiv.style.display = 'none';
+
+  try {
+    const res = await fetch(`/api/projects/lookup?phone=${encodeURIComponent(phone)}`);
+    const data = await res.json();
+    if (res.ok && data.success) {
+      state.currentProjectId = data.project.id;
+      state.currentProject = data.project;
+      closeLoginModal();
+      
+      // Si el proyecto ya fue pagado o seleccionado, mejor mandarlo al dashboard directamente
+      // si tiene status de pago PENDING o nada, mandarlo a conversion
+      if (state.currentProject.payment_status === 'PAID') {
+        loadClientDashboard();
+      } else {
+        showConversionScreen(state.currentProject);
+      }
+    } else {
+      errorDiv.innerText = data.error || "No se encontró ningún proyecto.";
+      errorDiv.style.display = 'block';
+    }
+  } catch (err) {
+    console.error("Error en login:", err);
+    errorDiv.innerText = "Ocurrió un error al conectar con el servidor.";
+    errorDiv.style.display = 'block';
+  }
+}
+
 async function handleWhatsappSubmit(event) {
   event.preventDefault();
   const waName = document.getElementById('waName').value;

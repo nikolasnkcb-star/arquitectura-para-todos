@@ -99,6 +99,11 @@ function getProjectById(id) {
   return memoryDb.projects.find(p => p.id === id);
 }
 
+function getProjectByPhone(phone) {
+  // Búsqueda por número de teléfono exacto o limpiando espacios si es necesario
+  return memoryDb.projects.find(p => p.client_phone && p.client_phone.replace(/\s+/g, '') === phone.replace(/\s+/g, ''));
+}
+
 function getAllProjects() {
   return memoryDb.projects;
 }
@@ -581,6 +586,7 @@ module.exports = {
   createProject,
   getProjectById,
   getAllProjects,
+  getProjectByPhone,
   updateProject,
   selectPackage,
   confirmPaymentAndActivate,
