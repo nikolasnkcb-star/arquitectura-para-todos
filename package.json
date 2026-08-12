@@ -1,0 +1,19 @@
+{
+  "name": "arquitectura-para-todos",
+  "version": "2.0.0",
+  "description": "Plataforma de desarrollo arquitectónico personalizado con Arqui IA - Paquetes BASIC S/500 y PREMIUM S/900",
+  "main": "backend/server.js",
+  "scripts": {
+    "start": "node backend/server.js",
+    "dev": "node backend/server.js",
+    "test": "node tests/commercial_model.test.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "mercadopago": "^2.0.12",
+    "resend": "^3.5.0"
+  },
+  "devDependencies": {}
+}

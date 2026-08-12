@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Arquitectura Para Todos — Arqui IA | Desarrollo Arquitectónico Personalizado</title>
+  <meta name="description" content="Arqui IA te ayuda a descubrir qué casa podrías construir. Nosotros te ayudamos a desarrollarla con asesorías personalizadas y propuesta arquitectónica.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- HEADER / NAVEGACIÓN -->
+  <header class="navbar">
+    <div class="nav-container">
+      <a href="#" class="brand" onclick="navTo('heroSection')">
+        <span class="brand-accent">ARQUITECTURA</span> PARA TODOS
+        <span class="brand-tag">ARQUI IA</span>
+      </a>
+      <nav class="nav-links">
+        <a href="#landingPricing" onclick="navTo('landingPricing')">Paquetes</a>
+        <a href="#freeStage" onclick="startFreeStage()" class="btn-sm btn-outline">Etapa Gratuita</a>
+        <a href="#clientDashboard" onclick="openClientDashboard()" class="nav-link-dashboard">Mi Proyecto</a>
+        <a href="#adminPanel" onclick="openAdminPanel()" class="nav-link-admin">Panel Admin</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- SECCIÓN HERO -->
+  <section id="heroSection" class="hero-section">
+    <div class="hero-content">
+      <div class="hero-badge">INTELIGENCIA ARTIFICIAL + ASESORÍA ARQUITECTÓNICA</div>
+      <h1 class="hero-title">DE UNA IDEA A UNA CASA.</h1>
+      <p class="hero-subtitle">
+        Arqui IA te ayuda a descubrir qué casa podrías construir.<br>
+        Nosotros te ayudamos a desarrollarla.
+      </p>
+      <div class="hero-actions">
+        <button class="btn btn-primary btn-lg" onclick="startFreeStage()">
+          EMPIEZA GRATIS <span class="arrow">→</span>
+        </button>
+        <a href="#landingPricing" class="btn btn-secondary btn-lg">Ver Paquetes Profesionales</a>
+      </div>
+      <div class="hero-guarantee">
+        <span>✓ Arquitectura local y consciente</span>
+        <span>✓ Especialistas en proyectos hasta 200 m²</span>
+        <span>✓ Cumplimiento RNE garantizado</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- FRANJA DE CONFIANZA LATAM -->
+  <div class="trust-stripe text-center" style="background: var(--color-surface); padding: 1.5rem; border-bottom: 1px solid var(--color-border);">
+    <p style="margin-bottom: 0.5rem; color: var(--color-text-muted); font-size: 0.9rem; font-weight: 500;">ARQUITECTURA DESDE PERÚ PARA LATINOAMÉRICA</p>
+    <div style="display: flex; justify-content: center; gap: 1.5rem; font-size: 1.5rem;">
+      <span title="Perú">🇵🇪</span>
+      <span title="Colombia">🇨🇴</span>
+      <span title="México">🇲🇽</span>
+      <span title="Chile">🇨🇱</span>
+      <span title="Ecuador">🇪🇨</span>
+    </div>
+  </div>
+
+  <!-- ETAPA GRATUITA DE ARQUI IA -->
+  <section id="freeStage" class="free-stage-section hidden">
+    <div class="section-container">
+      <div class="stage-header">
+        <span class="stage-step-tag">ETAPA 01 · GRATUITA</span>
+        <h2>EXPEDIENTE PRELIMINAR CON ARQUI IA</h2>
+        <p>Responde las preguntas para definir tu vivienda. Arqui IA analizará tu terreno, necesidades y presupuesto.</p>
+      </div>
+
+      <div class="chat-layout">
+        <!-- Panel Izquierdo: Ficha del Proyecto en tiempo real -->
+        <aside class="project-summary-card">
+          <div class="card-header">
+            <h3>TU PROYECTO</h3>
+            <span id="chatProgressText" class="progress-badge">Progreso: 0%</span>
+          </div>
+          <div class="progress-bar-container">
+            <div id="chatProgressBar" class="progress-bar-fill" style="width: 0%"></div>
+          </div>
+          <div id="projectSummaryData" class="summary-facts">
+            <p class="empty-state">Arqui IA irá organizando aquí la ficha técnica de tu terreno y vivienda.</p>
+          </div>
+        </aside>
+
+        <!-- Panel Derecho: Conversación e Interacción -->
+        <main class="chat-main-card">
+          <div id="chatMessages" class="chat-messages"></div>
+          <div id="chatTyping" class="chat-typing hidden">
+            <span class="dot"></span><span class="dot"></span><span class="dot"></span> Arqui IA está analizando tu proyecto...
+          </div>
+          <form id="chatForm" class="chat-form">
+            <input type="text" id="chatInput" placeholder="Escribe tu respuesta aquí..." required autocomplete="off">
+            <button type="submit" class="btn btn-primary">Enviar →</button>
+          </form>
+          <div class="reference-uploader-box">
+            <label for="referenceImageInput">📷 Subir imágenes de referencia para análisis de IA (opcional):</label>
+            <input type="file" id="referenceImageInput" accept="image/*" multiple onchange="handleReferenceUpload(event)">
+            <div id="referencePreviewList" class="reference-previews"></div>
+          </div>
+        </main>
+      </div>
+    </div>
+  </section>
+
+  <!-- RESULTADO GRATUITO Y CONVERSIÓN COMERCIAL -->
+  <section id="conversionSection" class="conversion-section hidden">
+    <div class="section-container text-center">
+      <div class="badge-success">ETAPA GRATUITA COMPLETADA</div>
+      <h2 class="conversion-title">TU CASA YA TIENE UNA IDEA</h2>
+      <p class="conversion-subtitle">Arqui IA te ha ayudado a definir las bases de tu proyecto.</p>
+
+      <div class="summary-checklist-grid">
+        <div class="check-item">✓ Terreno</div>
+        <div class="check-item">✓ Necesidades</div>
+        <div class="check-item">✓ Programa arquitectónico</div>
+        <div class="check-item">✓ Estilo</div>
+        <div class="check-item">✓ Distribución inicial</div>
+        <div class="check-item">✓ Concepto</div>
+        <div class="check-item">✓ Presupuesto referencial</div>
+      </div>
+
+      <!-- BANNER DE RECOMENDACIÓN AUTOMÁTICA DE ARQUI IA -->
+      <div id="aiRecommendationBanner" class="ai-recommendation-banner">
+        <div class="ai-avatar">🤖</div>
+        <div class="ai-rec-text">
+          <h4 id="recTitle">RECOMENDACIÓN DE ARQUI IA</h4>
+          <p id="recReason">Cargando análisis inteligente del proyecto...</p>
+          <span class="rec-disclaimer">* La recomendación es solamente informativa. Puedes elegir cualquiera de los 2 paquetes.</span>
+        </div>
+      </div>
+
+      <div class="conversion-callout">
+        <h3>¿QUIERES DESARROLLAR TU CASA?</h3>
+        <p>Ahora puedes llevar esta idea a una propuesta arquitectónica personalizada desarrollada junto a nuestro equipo profesional.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN: NUESTRO PROCESO -->
+  <section class="process-section">
+    <div class="section-container text-center">
+      <h2 style="margin-bottom: 1rem;">NUESTRO PROCESO DE TRABAJO</h2>
+      <p style="color: var(--color-text-muted);">Así transformamos tu idea en un proyecto real en 4 pasos claros.</p>
+      <div class="process-grid">
+        <div class="process-step">
+          <div class="process-number">01</div>
+          <h4>Diagnóstico Gratuito</h4>
+          <p style="font-size: 0.9rem; color: var(--color-text-muted); margin-top: 0.5rem;">Análisis de sitio interactivo con Arqui IA.</p>
+        </div>
+        <div class="process-step">
+          <div class="process-number">02</div>
+          <h4>Propuesta por WhatsApp</h4>
+          <p style="font-size: 0.9rem; color: var(--color-text-muted); margin-top: 0.5rem;">Validación conceptual de la idea inicial.</p>
+        </div>
+        <div class="process-step">
+          <div class="process-number">03</div>
+          <h4>Expediente Técnico</h4>
+          <p style="font-size: 0.9rem; color: var(--color-text-muted); margin-top: 0.5rem;">Planos PDF y visualización con normativas RNE.</p>
+        </div>
+        <div class="process-step">
+          <div class="process-number">04</div>
+          <h4>Acompañamiento</h4>
+          <p style="font-size: 0.9rem; color: var(--color-text-muted); margin-top: 0.5rem;">Asesoría en el proceso constructivo.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN: RESEÑAS -->
+  <section class="reviews-section">
+    <div class="section-container text-center">
+      <h2 style="margin-bottom: 1rem;">MÁS DE 120 FAMILIAS EN PERÚ YA CONSTRUYEN SEGURO</h2>
+      <p style="color: var(--color-text-muted);">Proyectos reales. Presupuestos respetados. Luz natural aprovechada.</p>
+      
+      <div class="reviews-grid" id="reviewsContainer">
+        <!-- Reseñas iniciales -->
+        <div class="review-card">
+          <div class="review-header">
+            <img src="https://ui-avatars.com/api/?name=Carlos+G&background=c82021&color=fff" alt="Avatar" class="review-avatar">
+            <div>
+              <strong>Carlos G.</strong>
+              <div class="review-stars">★★★★★</div>
+            </div>
+          </div>
+          <p class="review-text">"Me ahorraron miles en materiales innecesarios. Su distribución de la luz es increíble para un terreno de 120m2."</p>
+        </div>
+        <div class="review-card">
+          <div class="review-header">
+            <img src="https://ui-avatars.com/api/?name=Maria+P&background=f5c518&color=fff" alt="Avatar" class="review-avatar">
+            <div>
+              <strong>María P.</strong>
+              <div class="review-stars">★★★★★</div>
+            </div>
+          </div>
+          <p class="review-text">"Súper rápidos. En dos semanas ya tenía los planos listos para la municipalidad cumpliendo todo el RNE. ¡Recomendados!"</p>
+        </div>
+        <div class="review-card">
+          <div class="review-header">
+            <img src="https://ui-avatars.com/api/?name=Luis+F&background=c82021&color=fff" alt="Avatar" class="review-avatar">
+            <div>
+              <strong>Luis F.</strong>
+              <div class="review-stars">★★★★☆</div>
+            </div>
+          </div>
+          <p class="review-text">"La ficha gratuita por WhatsApp nos ayudó muchísimo a aterrizar nuestro presupuesto. Muy buena asesoría en Lima."</p>
+        </div>
+      </div>
+
+      <button class="btn btn-outline" style="margin-top: 2rem;" onclick="loadMoreReviews()" id="btnLoadReviews">Ver más opiniones ↓</button>
+    </div>
+  </section>
+
+  <!-- SECCIÓN DE PRECIOS Y PAQUETES COMERCIALES -->
+  <section id="landingPricing" class="pricing-section">
+    <div class="section-container">
+      <div class="section-header text-center">
+        <h2>ELIGE CÓMO QUIERES DESARROLLAR TU CASA</h2>
+        <p>Servicio de <strong>Desarrollo ArquITECTÓNICO PERSONALIZADO</strong> con asesoría, planos acotados y visualización 3D.</p>
+      </div>
+
+      <div class="pricing-cards-grid">
+        
+        <!-- TARJETA BASIC (S/500) -->
+        <div class="pricing-card basic-card" id="cardBasic">
+          <div class="card-top">
+            <span class="package-badge basic-badge">PAQUETE BÁSICO</span>
+            <h3 class="package-title">BASIC</h3>
+            <div class="package-price">
+              <span class="crossed-price">S/ 500</span>
+              <span class="currency">S/</span><span class="amount" id="priceBasicDisplay">250</span>
+            </div>
+            <p class="package-tagline">LLEVA TU IDEA A UN PLANO</p>
+          </div>
+          <p class="package-description">
+            Pensado para clientes que ya tienen una idea clara de su vivienda y necesitan desarrollar una propuesta arquitectónica personalizada.
+          </p>
+          <ul class="package-features">
+            <li><strong>2 asesorías personalizadas</strong> (45 min c/u)</li>
+            <li>Revisión del programa arquitectónico</li>
+            <li>Desarrollo y revisión de distribución</li>
+            <li>Ajustes de diseño en asesorías</li>
+            <li><strong>Planta arquitectónica acotada</strong></li>
+            <li><strong>Planos PDF acotados</strong></li>
+            <li><strong>Propuesta de Fachada 3D</strong> (vista conceptual)</li>
+            <li>Revisión de propuesta mediante IA</li>
+            <li>Documento del proyecto en formato digital</li>
+          </ul>
+          <button class="btn btn-outline btn-block" onclick="selectAndCheckout('BASIC')">
+            QUIERO EL PAQUETE BÁSICO →
+          </button>
+        </div>
+
+        <!-- TARJETA PREMIUM (S/900) -->
+        <div class="pricing-card premium-card featured" id="cardPremium">
+          <div class="featured-ribbon" id="premiumBadgeDisplay">RECOMENDADO</div>
+          <div class="card-top">
+            <span class="package-badge premium-badge">PAQUETE COMPLETO</span>
+            <h3 class="package-title">PREMIUM</h3>
+            <div class="package-price">
+              <span class="crossed-price">S/ 900</span>
+              <span class="currency">S/</span><span class="amount" id="pricePremiumDisplay">450</span>
+            </div>
+            <p class="package-tagline">DESARROLLA TU CASA</p>
+          </div>
+          <p class="package-description">
+            Pensado para clientes que quieren una propuesta arquitectónica mucho más desarrollada, con mayor tiempo de asesoría, visualización 3D y recorrido de su proyecto.
+          </p>
+          <ul class="package-features">
+            <li><strong>4 asesorías personalizadas</strong> (45 min c/u)</li>
+            <li>Desarrollo arquitectónico personalizado avanzado</li>
+            <li>Plantas arquitectónicas acotadas</li>
+            <li>Planos PDF acotados</li>
+            <li>Fachada 3D principal + <strong>Varias vistas 3D</strong></li>
+            <li><strong>Modelo 3D conceptual completo</strong></li>
+            <li><strong>Video Recorrido de la propuesta</strong> (MP4/WEBM)</li>
+            <li>Posibilidad de publicación en canal de YouTube*</li>
+            <li>Entrega digital con revisión final</li>
+          </ul>
+          <button class="btn btn-primary btn-block" onclick="selectAndCheckout('PREMIUM')">
+            QUIERO EL PAQUETE PREMIUM →
+          </button>
+        </div>
+
+      </div>
+
+      <!-- TABLA COMPARATIVA -->
+      <div class="comparison-table-wrapper">
+        <h3 class="table-title">TABLA COMPARATIVA DE CARACTERÍSTICAS</h3>
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>CARACTERÍSTICA</th>
+              <th class="text-center">BASIC</th>
+              <th class="text-center">PREMIUM</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Precio</td>
+              <td class="text-center font-bold"><span class="crossed-price">S/ 500</span><span class="currency">S/</span><span class="amount" id="tableBasicPrice">250</span></td>
+              <td class="text-center font-bold"><span class="crossed-price">S/ 900</span><span class="currency">S/</span><span class="amount" id="tablePremiumPrice">450</span></td>
+            </tr>
+            <tr>
+              <td>Asesorías personalizadas</td>
+              <td class="text-center">2</td>
+              <td class="text-center">4</td>
+            </tr>
+            <tr>
+              <td>Duración por asesoría</td>
+              <td class="text-center">45 min</td>
+              <td class="text-center">45 min</td>
+            </tr>
+            <tr>
+              <td>Programa arquitectónico</td>
+              <td class="text-center">✓</td>
+              <td class="text-center">✓</td>
+            </tr>
+            <tr>
+              <td>Distribución de ambientes</td>
+              <td class="text-center">✓</td>
+              <td class="text-center">✓</td>
+            </tr>
+            <tr>
+              <td>Planos PDF acotados</td>
+              <td class="text-center">✓</td>
+              <td class="text-center">✓</td>
+            </tr>
+            <tr>
+              <td>Fachada 3D conceptual</td>
+              <td class="text-center">✓</td>
+              <td class="text-center">✓</td>
+            </tr>
+            <tr>
+              <td>Revisión de materialidad</td>
+              <td class="text-center">✓</td>
+              <td class="text-center">✓</td>
+            </tr>
+            <tr>
+              <td>Vistas 3D adicionales</td>
+              <td class="text-center muted">—</td>
+              <td class="text-center font-bold">✓</td>
+            </tr>
+            <tr>
+              <td>Modelo 3D conceptual</td>
+              <td class="text-center muted">—</td>
+              <td class="text-center font-bold">✓</td>
+            </tr>
+            <tr>
+              <td>Desarrollo avanzado</td>
+              <td class="text-center muted">—</td>
+              <td class="text-center font-bold">✓</td>
+            </tr>
+            <tr>
+              <td>Video recorrido del proyecto</td>
+              <td class="text-center muted">—</td>
+              <td class="text-center font-bold">✓</td>
+            </tr>
+            <tr>
+              <td>Publicación en YouTube</td>
+              <td class="text-center muted">—</td>
+              <td class="text-center">Opcional*</td>
+            </tr>
+          </tbody>
+        </table>
+        
+        <div class="rne-seal" style="margin-top: 2rem; justify-content: center; width: 100%;">
+          <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+          Conforme al Reglamento Nacional de Edificaciones (RNE) - Perú
+        </div>
+        <p class="table-footnote">* La publicación en YouTube se realiza únicamente con autorización expresa del cliente.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- MODAL DE CHECKOUT Y PAGO INICIAL -->
+  <div id="checkoutModal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <button class="modal-close" onclick="closeCheckoutModal()">×</button>
+      <div class="modal-header">
+        <span class="badge-tag">CHECKOUT SEGURO</span>
+        <h2>CONFIRMA TU PAQUETE</h2>
+      </div>
+
+      <div class="checkout-summary">
+        <div class="summary-row">
+          <span>Proyecto:</span>
+          <strong id="checkoutProjectName">Casa Unifamiliar</strong>
+        </div>
+        <div class="summary-row">
+          <span>Paquete Seleccionado:</span>
+          <strong id="checkoutPackageName">BASIC</strong>
+        </div>
+        <div class="summary-row">
+          <span>Asesorías Incluidas:</span>
+          <span id="checkoutMeetings">2 asesorías de 45 minutos</span>
+        </div>
+        <div class="summary-row total-row">
+          <span>PRECIO TOTAL:</span>
+          <strong id="checkoutPrice" class="total-price">S/500</strong>
+        </div>
+      </div>
+
+      <div class="legal-disclaimers-box">
+        <h4>ALCANCE DEL SERVICIO Y ADVERTENCIA LEGAL:</h4>
+        <ul>
+          <li>Los entregables corresponden al alcance contratado y constituyen una propuesta arquitectónica desarrollada.</li>
+          <li>Para ejecutar una obra deberán realizarse los estudios, especialidades, verificaciones normativas, estructurales, instalaciones, licencias y demás documentos que correspondan según la normativa y las condiciones del proyecto.</li>
+        </ul>
+      </div>
+
+      <div class="checkout-actions">
+        <button class="btn btn-success btn-lg btn-block" onclick="processPaymentSimulated('PAID')">
+          💳 SIMULAR PAGO EXITOSO Y ACTIVAR PROYECTO
+        </button>
+        <button class="btn btn-danger btn-sm" onclick="processPaymentSimulated('FAILED')">
+          Simular Pago Rechazado
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DE UPGRADE BASIC -> PREMIUM (FASE 2) -->
+  <div id="upgradeModal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <button class="modal-close" onclick="closeUpgradeModal()">×</button>
+      <div class="modal-header">
+        <span class="badge-tag gold-badge">UPGRADE DE PAQUETE</span>
+        <h2>ACTUALIZA TU PROYECTO A PREMIUM</h2>
+      </div>
+
+      <div class="checkout-summary">
+        <div class="summary-row">
+          <span>Paquete Actual:</span>
+          <strong>BASIC (S/500)</strong>
+        </div>
+        <div class="summary-row">
+          <span>Ya pagaste:</span>
+          <strong id="upgradeOriginalPaid">S/500</strong>
+        </div>
+        <div class="summary-row">
+          <span>Precio Paquete Premium:</span>
+          <strong id="upgradePremiumPrice">S/900</strong>
+        </div>
+        <div class="summary-row total-row">
+          <span>SOLO DEBES PAGAR LA DIFERENCIA:</span>
+          <strong id="upgradeDiffPrice" class="total-price gold-text">S/400</strong>
+        </div>
+      </div>
+
+      <div class="upgrade-benefits-box">
+        <h4>CON PREMIUM OBTENDRÁS DE INMEDIATO:</h4>
+        <ul>
+          <li>+2 Asesorías adicionales de 45 min (Total 4 asesorías).</li>
+          <li>Acceso desbloqueado al Modelo 3D Conceptual.</li>
+          <li>Vistas 3D adicionales del proyecto.</li>
+          <li>Video Recorrido de la propuesta en MP4/WEBM.</li>
+          <li>Posibilidad de publicar tu vivienda en YouTube.</li>
+        </ul>
+      </div>
+
+      <div class="checkout-actions">
+        <button class="btn btn-primary btn-lg btn-block" onclick="processUpgradePaymentSimulated('PAID')">
+          ⚡ ACTUALIZAR A PREMIUM (PAGAR S/<span id="btnUpgradeAmount">400</span>) →
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PANEL DEL CLIENTE — MI PROYECTO -->
+  <section id="clientDashboard" class="dashboard-section hidden">
+    <div class="section-container">
+      
+      <!-- HEADER PROYECTO CLIENTE -->
+      <div class="dash-header">
+        <div>
+          <span class="dash-eyebrow">PANEL DE CLIENTE</span>
+          <h1 id="dashProjectTitle">MI PROYECTO</h1>
+          <p id="dashClientName">Cliente: Juan Pérez</p>
+        </div>
+        <div class="dash-badges">
+          <div class="dash-badge-box">
+            <span class="label">PAQUETE</span>
+            <span id="dashPackageCode" class="val-badge">BASIC</span>
+          </div>
+          <div class="dash-badge-box">
+            <span class="label">PRECIO PAGADO</span>
+            <span id="dashPackagePrice" class="val">S/500</span>
+          </div>
+          <div class="dash-badge-box">
+            <span class="label">ASESORÍAS</span>
+            <span id="dashMeetingsCount" class="val">0 / 2</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- FASE 4 & FASE 6: PROMO BANNER DE UPGRADE EN DASHBOARD BASIC -->
+      <div id="basicUpgradePromoBox" class="upgrade-promo-banner hidden">
+        <div class="promo-text-content">
+          <span class="promo-tag">¿QUIERES LLEVAR TU PROYECTO UN PASO MÁS ALLÁ?</span>
+          <h3>Tu proyecto está avanzando.</h3>
+          <p>Con Premium puedes desarrollar la volumetría completa, visualizar tu casa en vista conceptual interactiva y obtener un recorrido en video de la propuesta.</p>
+          <div class="promo-price-comparison">
+            <span>BASIC S/<span id="promoBasicPrice">500</span> (Ya pagaste S/<span id="promoPaidPrice">500</span>)</span>
+            <span class="vs">vs</span>
+            <strong>PREMIUM S/<span id="promoPremiumPrice">900</span></strong>
+            <span class="diff-badge">Actualización disponible por S/<span id="promoDiffPrice">400</span></span>
+          </div>
+        </div>
+        <div class="promo-action">
+          <button class="btn btn-primary btn-lg" onclick="openUpgradeModal()">
+            ACTUALIZAR A PREMIUM →
+          </button>
+        </div>
+      </div>
+
+      <!-- HISTORIAL DE PAGOS (FASE 6 DE PROYECTO) -->
+      <div class="dash-card">
+        <h3>HISTORIAL DE PAGOS DEL PROYECTO</h3>
+        <div id="paymentHistoryBreakdown" class="payment-history-grid">
+          <!-- Transacciones registradas -->
+        </div>
+      </div>
+
+      <!-- BARRAS DE PROGRESO Y CRONOGRAMA -->
+      <div class="dash-card">
+        <h3>PROGRESO DEL PROYECTO</h3>
+        <div class="progress-bar-container large">
+          <div id="dashProgressBar" class="progress-bar-fill" style="width: 25%"></div>
+        </div>
+        <div class="timeline-stages">
+          <span class="stage active">01 Programa</span>
+          <span class="stage active">02 Concepto</span>
+          <span class="stage">03 Distribución</span>
+          <span class="stage">04 Fachada</span>
+          <span class="stage">05 Planos</span>
+          <span id="stage3D" class="stage">06 Modelo 3D</span>
+          <span id="stageVideo" class="stage">07 Video</span>
+          <span class="stage">08 Entrega final</span>
+        </div>
+      </div>
+
+      <!-- ASESORÍAS Y REUNIONES AGENDADAS DE 45 MINUTOS -->
+      <div class="dash-card">
+        <h3>ASESORÍAS PERSONALIZADAS DE 45 MINUTOS</h3>
+        <div id="meetingsList" class="meetings-grid">
+          <!-- Lista dinámica de reuniones -->
+        </div>
+      </div>
+
+      <!-- ENTREGABLES DEL PROYECTO -->
+      <div class="dash-card">
+        <h3>ENTREGABLES DE TU PROYECTO</h3>
+        <p class="text-sm muted">Visualiza y descarga los archivos correspondientes a tu paquete contratado.</p>
+        <div id="deliverablesGrid" class="deliverables-grid">
+          <!-- Entregables filtrados por backend -->
+        </div>
+      </div>
+
+      <!-- FASE 1: TARJETAS DE ENTREGABLES PREMIUM BLOQUEADOS EN BASIC ("DESBLOQUEA MÁS DE TU PROYECTO") -->
+      <div id="lockedDeliverablesSection" class="dash-card locked-section hidden">
+        <h3>DESBLOQUEA MÁS DE TU PROYECTO</h3>
+        <p class="text-sm muted">Los siguientes entregables de alta visualización pertenecen al Paquete PREMIUM:</p>
+        <div class="deliverables-grid">
+          <div class="deliverable-card locked-card">
+            <div class="lock-icon">🔒</div>
+            <h4>MODELO 3D CONCEPTUAL</h4>
+            <p class="text-sm muted">Disponible en Premium.</p>
+            <span class="badge-tag">RESTRINGIDO</span>
+          </div>
+          <div class="deliverable-card locked-card">
+            <div class="lock-icon">🔒</div>
+            <h4>VISTAS 3D ADICIONALES</h4>
+            <p class="text-sm muted">Disponible en Premium.</p>
+            <span class="badge-tag">RESTRINGIDO</span>
+          </div>
+          <div class="deliverable-card locked-card">
+            <div class="lock-icon">🔒</div>
+            <h4>VIDEO RECORRIDO DE LA PROPUESTA</h4>
+            <p class="text-sm muted">Disponible en Premium.</p>
+            <span class="badge-tag">RESTRINGIDO</span>
+          </div>
+        </div>
+        <div class="locked-cta-bar text-center" style="margin-top: 1.5rem;">
+          <button class="btn btn-primary" onclick="openUpgradeModal()">
+            CONOCE EL PAQUETE PREMIUM →
+          </button>
+        </div>
+      </div>
+
+      <!-- SECCIÓN MODELO 3D (PREMIUM) -->
+      <section id="viewer3DSection" class="dash-card hidden" style="margin-top: 1.5rem;">
+        <div class="dash-card-header">
+          <h3>VISTA CONCEPTUAL INTERACTIVA</h3>
+          <span class="badge-sm premium-badge">EXCLUSIVO PREMIUM</span>
+        </div>
+        <p class="muted" style="margin-top: 0.5rem; font-size: 0.9rem;">Explora el volumen conceptual de tu vivienda en nuestra vista interactiva de prototipo. Usa los controles para rotar o hacer zoom.</p>
+        <div class="viewer-3d-canvas-box">
+          <canvas id="canvas3D" width="800" height="400"></canvas>
+          <div class="viewer-controls-bar">
+            <button class="btn btn-sm btn-outline" onclick="control3D('rotate')">↺ Rotar Modelo</button>
+            <button class="btn btn-sm btn-outline" onclick="control3D('zoomIn')">➕ Zoom In</button>
+            <button class="btn btn-sm btn-outline" onclick="control3D('zoomOut')">➖ Zoom Out</button>
+            <button class="btn btn-sm btn-outline" onclick="control3D('pan')">↔ Desplazar</button>
+            <button class="btn btn-sm btn-outline" onclick="control3D('reset')">🔄 Resetear Vista</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- MÓDULO RECORRIDO EN VIDEO (SOLO PREMIUM) -->
+      <div id="premiumVideoSection" class="dash-card premium-module hidden">
+        <div class="module-header">
+          <span class="badge-tag">EXCLUSIVO PREMIUM</span>
+          <h2>TU CASA EN RECORRIDO</h2>
+        </div>
+        <div id="videoContainer" class="video-container">
+          <p class="empty-video">El video recorrido se encuentra en etapa de renderizado por el equipo arquitectónico.</p>
+        </div>
+
+        <!-- AUTORIZACIÓN DE PUBLICACIÓN YOUTUBE -->
+        <div class="youtube-consent-box">
+          <h3>¿QUIERES MOSTRAR TU CASA EN NUESTRO CANAL?</h3>
+          <p>Como parte del Paquete Premium podemos presentar el proyecto como parte de nuestro contenido de arquitectura en YouTube. La publicación es opcional y requiere tu autorización.</p>
+
+          <div class="consent-options">
+            <label class="radio-label">
+              <input type="radio" name="ytConsent" value="true" onchange="toggleConsent(true)">
+              <strong>SÍ, AUTORIZO LA PUBLICACIÓN DEL PROYECTO</strong>
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="ytConsent" value="false" onchange="toggleConsent(false)" checked>
+              <strong>NO, PREFIERO QUE MI PROYECTO SEA PRIVADO</strong>
+            </label>
+          </div>
+
+          <div id="youtubeStatusAlert" class="yt-status-alert">
+            Estado de publicación: PRIVADO / NO PUBLICADO
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- PANEL ADMINISTRATIVO -->
+  <section id="adminPanel" class="admin-section hidden">
+    <div class="section-container">
+      <div class="admin-header">
+        <div>
+          <span class="dash-eyebrow">GESTOR ARQUITECTÓNICO</span>
+          <h1>PANEL ADMINISTRATIVO</h1>
+        </div>
+        <button class="btn btn-sm btn-outline" onclick="loadAdminProjects()">🔄 Actualizar Lista</button>
+      </div>
+
+      <div class="admin-filters-bar">
+        <span class="filter-label">Filtrar Proyectos:</span>
+        <button class="filter-btn active" onclick="setAdminFilter('ALL', this)">Todos</button>
+        <button class="filter-btn" onclick="setAdminFilter('BASIC', this)">BASIC</button>
+        <button class="filter-btn" onclick="setAdminFilter('PREMIUM', this)">PREMIUM</button>
+        <button class="filter-btn" onclick="setAdminFilter('PENDING_PAYMENT', this)">Pago pendiente</button>
+        <button class="filter-btn" onclick="setAdminFilter('PAID', this)">Pagados</button>
+        <button class="filter-btn" onclick="setAdminFilter('ACTIVE', this)">En desarrollo</button>
+        <button class="filter-btn" onclick="setAdminFilter('WITH_VIDEO', this)">Con video</button>
+        <button class="filter-btn" onclick="setAdminFilter('WITH_YOUTUBE_CONSENT', this)">Con Autorización YouTube</button>
+      </div>
+
+      <div class="admin-table-wrapper">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Cliente / Proyecto</th>
+              <th>Paquete</th>
+              <th>Precio</th>
+              <th>Estado Pago</th>
+              <th>Reuniones</th>
+              <th>Video</th>
+              <th>YouTube Consent</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="adminProjectsTableBody"></tbody>
+        </table>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- MODAL DE ADMINISTRACIÓN DE PROYECTO -->
+  <div id="adminManageModal" class="modal-overlay hidden">
+    <div class="modal-card modal-lg">
+      <button class="modal-close" onclick="closeAdminModal()">×</button>
+      <div class="modal-header">
+        <h2>GESTIONAR PROYECTO <span id="adminModalProjectTitle"></span></h2>
+      </div>
+
+      <div class="admin-modal-body">
+        <!-- FASE 1: PROGRAMAR REUNIONES CON INPUT DATETIME-LOCAL -->
+        <div class="admin-section-box">
+          <h4>1. Programar Asesorías (45 min) — Selector de Fecha y Hora</h4>
+          <div id="adminMeetingsManageList"></div>
+        </div>
+
+        <div class="admin-section-box">
+          <h4>2. Subir Entregables y Recorrido 3D/Video</h4>
+          <div id="adminDeliverablesManageList"></div>
+        </div>
+
+        <div class="admin-section-box highlight-box">
+          <h4>3. Publicación en YouTube (Solo PREMIUM)</h4>
+          <div id="adminYoutubePublishControl"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-container">
+      <p>© 2026 Arquitectura Para Todos — Arqui IA. Todos los derechos reservados.</p>
+      <p class="legal-note">Modelo Comercial 2.0: Paquetes Profesionales BASIC (S/<span id="footerBasicPrice">500</span>) y PREMIUM (S/<span id="footerPremiumPrice">900</span>).</p>
+    </div>
+  </footer>
+
+  <!-- WHATSAPP CAPTURE MODAL -->
+  <div id="whatsappModal" class="modal-overlay">
+    <div class="modal-content">
+      <div style="font-size: 3rem; margin-bottom: 1rem;">🎉</div>
+      <h3>¡Ficha de Anteproyecto Lista!</h3>
+      <p>Déjanos tu Nombre y WhatsApp para enviarte tu propuesta conceptual gratuita y ponernos en contacto por ese medio.</p>
+      <form id="whatsappForm" class="modal-form" onsubmit="handleWhatsappSubmit(event)">
+        <div class="form-group">
+          <label for="waName">Tu Nombre Completo</label>
+          <input type="text" id="waName" placeholder="Ej. Juan Pérez" required>
+        </div>
+        <div class="form-group">
+          <label for="waPhone">WhatsApp / Celular</label>
+          <input type="tel" id="waPhone" value="+51" placeholder="+51 999 999 999" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Ver mi Ficha Ahora →</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
