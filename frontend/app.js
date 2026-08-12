@@ -886,7 +886,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const val = document.getElementById('chatInput').value.trim();
     if (val) sendChatMessage(val);
   });
-}
+});
 
 /* =========================================================
    WHATSAPP MODAL & REVIEWS LOGIC
@@ -981,4 +981,4 @@ function loadMoreReviews() {
     }
     btn.style.display = 'none'; // Ocultar botón después de cargar todas
   }
-});
+}
