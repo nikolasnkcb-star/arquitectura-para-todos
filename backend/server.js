@@ -98,8 +98,6 @@ const server = http.createServer(async (req, res) => {
 
     // Inicializar Gemini
     const apiKey = process.env.GEMINI_API_KEY || 'MISSING_API_KEY';
-    const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" }, { apiVersion: "v1beta" });
 
     const systemPrompt = `
 Eres "Arqui IA", un arquitecto carismático, consultor comercial y especialista en el Reglamento Nacional de Edificaciones (RNE) del Perú. Trabajas para "Arquitectura Para Todos".
@@ -152,12 +150,23 @@ Historial de conversación: ${JSON.stringify(history.slice(-6))} // últimos men
          });
       }
 
-      const result = await model.generateContent({
-        contents: [{ role: "user", parts: [{ text: systemPrompt }] }],
-        generationConfig: { responseMimeType: "application/json" }
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ role: 'user', parts: [{ text: systemPrompt }] }],
+          generationConfig: { responseMimeType: "application/json" }
+        })
       });
-      
-      let responseText = result.response.text();
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        console.error("Error de Gemini API:", data);
+        return sendJson(res, 500, { success: false, error: data.error?.message || "Error en la respuesta de la IA" });
+      }
+
+      let responseText = data.candidates?.[0]?.content?.parts?.[0]?.text || '{}';
       // Limpiar bloques de markdown si los hubiera
       responseText = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
       
