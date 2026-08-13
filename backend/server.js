@@ -222,7 +222,7 @@ Historial de conversación: ${JSON.stringify(history.slice(-6))} // últimos men
 
     } catch (err) {
       console.error("[Gemini API Error]", err);
-      return sendJson(res, 500, { success: false, error: "Error en la IA." });
+      return sendJson(res, 500, { success: false, error: "Error en la IA: " + (err.message || err.toString()) });
     }
   }
 
