@@ -325,7 +325,17 @@ async function processPayment() {
     }
 
     if (data.init_point) {
-      window.location.href = data.init_point;
+      // Abrir en ventana emergente (modal popup)
+      const popupWidth = 800;
+      const popupHeight = 650;
+      const left = (window.screen.width - popupWidth) / 2;
+      const top = (window.screen.height - popupHeight) / 2;
+      window.open(data.init_point, 'MercadoPago', `width=${popupWidth},height=${popupHeight},left=${left},top=${top}`);
+      
+      const modal = document.getElementById('checkoutModal');
+      if (modal && !modal.classList.contains('hidden')) {
+        modal.classList.add('hidden');
+      }
       return;
     }
 
@@ -388,7 +398,17 @@ async function processUpgradePayment() {
     }
 
     if (data.init_point) {
-      window.location.href = data.init_point;
+      // Abrir en ventana emergente (modal popup)
+      const popupWidth = 800;
+      const popupHeight = 650;
+      const left = (window.screen.width - popupWidth) / 2;
+      const top = (window.screen.height - popupHeight) / 2;
+      window.open(data.init_point, 'MercadoPago', `width=${popupWidth},height=${popupHeight},left=${left},top=${top}`);
+      
+      const modal = document.getElementById('upgradeModal');
+      if (modal && !modal.classList.contains('hidden')) {
+        modal.classList.add('hidden');
+      }
       return;
     }
 
