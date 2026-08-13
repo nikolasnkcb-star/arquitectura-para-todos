@@ -295,12 +295,8 @@ async function selectAndCheckout(packageCode) {
       return;
     }
 
-    document.getElementById('checkoutProjectName').textContent = state.currentProject.project_name || 'Casa Unifamiliar';
-    document.getElementById('checkoutPackageName').textContent = `${data.packageCode} (${data.packageDetails.package_name})`;
-    document.getElementById('checkoutMeetings').textContent = `${data.meetingCount} asesorías de 45 minutos`;
-    document.getElementById('checkoutPrice').textContent = `S/${data.packagePrice}`;
-
-    document.getElementById('checkoutModal').classList.remove('hidden');
+    // Bypass modal and directly trigger payment processing
+    await processPayment();
 
   } catch (err) {
     console.error("Error en checkout:", err);
