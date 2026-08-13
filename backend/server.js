@@ -142,39 +142,27 @@ Historial de conversación: ${JSON.stringify(history.slice(-6))}
          });
       }
 
-      const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=${process.env.GEMINI_API_KEY}`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents: [{ role: 'user', parts: [{ text: systemPrompt }] }]
-          })
-        }
-      );
-
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${process.env.GEMINI_API_KEY}`);
       const data = await response.json();
 
       if (!response.ok) {
-        console.error("Error de Gemini API:", data);
-        return sendJson(res, 500, { success: false, error: data.error?.message || "Error en la respuesta de la IA" });
+        console.error("Error de Gemini API (ListModels):", data);
+        return sendJson(res, 500, { success: false, error: data.error?.message || "Error al listar modelos" });
       }
 
-      let responseText = data.candidates?.[0]?.content?.parts?.[0]?.text || '{}';
-      responseText = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
+      // Filter to only those that support generateContent
+      const validModels = (data.models || [])
+        .filter(m => m.supportedGenerationMethods && m.supportedGenerationMethods.includes("generateContent"))
+        .map(m => m.name);
+
+      let responseText = "⚠️ MODO DEPURACIÓN: He detectado los siguientes modelos disponibles en tu API Key: \n\n" + validModels.join("\n");
       
-      let aiResponse;
-      try {
-        aiResponse = JSON.parse(responseText);
-      } catch (parseError) {
-        console.warn("Gemini no devolvió JSON válido. Usando texto plano como fallback:", responseText);
-        aiResponse = {
-          reply: responseText || "No pude procesar tu información correctamente. ¿Podrías repetirlo?",
-          finished: false,
-          progress: 0,
-          extractedData: {}
-        };
-      }
+      let aiResponse = {
+        reply: responseText,
+        finished: false,
+        progress: 0,
+        extractedData: {}
+      };
 
       // Si terminó, crear el proyecto
       if (aiResponse.finished) {
