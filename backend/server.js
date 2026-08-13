@@ -11,15 +11,10 @@ const url = require('url');
 const { CONFIG, getActiveConfig, getUpgradePrice } = require('../config/packages.config');
 const db = require('./db');
 const emailService = require('./services/email.service');
-const { GoogleGenerativeAI } = require('@google/generative-ai');
+const { GoogleGenerativeAI } = require("@google/generative-ai");
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-
-// Forzar la versión de la API a 'v1beta'
-const model = genAI.getGenerativeModel(
-  { model: "gemini-1.5-flash" },
-  { apiVersion: "v1beta" }
-);
+const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
 try { require('dotenv').config(); } catch (e) {}
 let mpClient = null;
@@ -159,15 +154,15 @@ Historial de conversación: ${JSON.stringify(history.slice(-6))} // últimos men
       }
 
       const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }]
-        })
-      }
-    );
+  `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
+  {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      contents: [{ parts: [{ text: promptConHistorial }] }]
+    })
+  }
+);
 
       const data = await response.json();
 
