@@ -136,10 +136,20 @@ const server = http.createServer(async (req, res) => {
       }
 
       let responseText = data.candidates?.[0]?.content?.parts?.[0]?.text || '{}';
-      // Limpiar bloques de markdown si los hubiera
       responseText = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
       
-      const aiResponse = JSON.parse(responseText);
+      let aiResponse;
+      try {
+        aiResponse = JSON.parse(responseText);
+      } catch (parseError) {
+        console.warn("Gemini no devolvió JSON válido. Usando texto plano como fallback:", responseText);
+        aiResponse = {
+          reply: responseText || "No pude procesar tu información correctamente. ¿Podrías repetirlo?",
+          finished: false,
+          progress: 0,
+          extractedData: {}
+        };
+      }
 
       // Si terminó, crear el proyecto
       if (aiResponse.finished) {
@@ -193,14 +203,14 @@ const server = http.createServer(async (req, res) => {
       return sendJson(res, 200, {
         success: true,
         finished: false,
-        reply: aiResponse.reply,
-        extractedData: aiResponse.extractedData,
-        progress: aiResponse.progress
+        reply: aiResponse.reply || "Lo siento, hubo un problema al procesar la respuesta.",
+        extractedData: aiResponse.extractedData || {},
+        progress: aiResponse.progress || 0
       });
 
     } catch (err) {
-      console.error("[Gemini API Error]", err);
-      return sendJson(res, 500, { success: false, error: "Error en la IA: " + (err.message || err.toString()) });
+      console.error("[Gemini API Error] Error crítico en servidor:", err);
+      return sendJson(res, 500, { success: false, error: "Error interno del servidor: " + (err.message || err.toString()) });
     }
   }
 
