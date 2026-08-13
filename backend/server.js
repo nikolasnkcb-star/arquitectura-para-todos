@@ -157,7 +157,10 @@ Historial de conversación: ${JSON.stringify(history.slice(-6))} // últimos men
         generationConfig: { responseMimeType: "application/json" }
       });
       
-      const responseText = result.response.text();
+      let responseText = result.response.text();
+      // Limpiar bloques de markdown si los hubiera
+      responseText = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
+      
       const aiResponse = JSON.parse(responseText);
 
       // Si terminó, crear el proyecto
