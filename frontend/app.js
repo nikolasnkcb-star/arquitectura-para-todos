@@ -261,6 +261,7 @@ async function showConversionScreen(project) {
 }
 
 async function selectAndCheckout(packageCode) {
+  console.log(packageCode);
   state.selectedPackageCode = packageCode;
 
   if (!state.currentProjectId) {
