@@ -310,14 +310,13 @@ function closeCheckoutModal() {
   document.getElementById('checkoutModal').classList.add('hidden');
 }
 
-async function processPaymentSimulated(statusToSimulate) {
+async function processPayment() {
   try {
     const res = await fetch('/api/checkout/pay', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        projectId: state.currentProjectId,
-        simulateStatus: statusToSimulate
+        projectId: state.currentProjectId
       })
     });
 
@@ -374,14 +373,13 @@ function closeUpgradeModal() {
   document.getElementById('upgradeModal').classList.add('hidden');
 }
 
-async function processUpgradePaymentSimulated(statusToSimulate) {
+async function processUpgradePayment() {
   try {
     const res = await fetch('/api/checkout/upgrade-pay', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        projectId: state.currentProjectId,
-        simulateStatus: statusToSimulate
+        projectId: state.currentProjectId
       })
     });
 

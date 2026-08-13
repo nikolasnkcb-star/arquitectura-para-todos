@@ -274,7 +274,6 @@ const server = http.createServer(async (req, res) => {
           unit_price: Number(project.package_price),
           currency_id: 'PEN'
         }],
-        payer: { name: project.client_name, email: project.client_email },
         metadata: { project_id: project.id, type: 'NEW_PACKAGE' },
         back_urls: {
           success: baseUrl,
@@ -284,8 +283,10 @@ const server = http.createServer(async (req, res) => {
         auto_return: 'approved',
         notification_url: webhookUrl
       };
+      console.log("[MercadoPago] Creando preferencia de pago:", prefBody);
       const preference = await mpPreference.create({ body: prefBody });
-      return sendJson(res, 200, { success: true, init_point: preference.init_point });
+      console.log("[MercadoPago] Preferencia creada exitosamente. ID:", preference.id);
+      return sendJson(res, 200, { success: true, init_point: preference.init_point || preference.sandbox_init_point });
     } catch (err) {
       console.error("[MercadoPago Error]", err);
       return sendJson(res, 500, { success: false, error: 'Error al generar preferencia de pago.' });
@@ -345,12 +346,11 @@ const server = http.createServer(async (req, res) => {
       const prefBody = {
         items: [{
           id: 'UPGRADE_PREMIUM',
-          title: `Upgrade a Paquete PREMIUM - Arqui IA`,
+          title: 'Upgrade a Paquete PREMIUM - Arqui IA',
           quantity: 1,
           unit_price: Number(upgradePrice),
           currency_id: 'PEN'
         }],
-        payer: { name: project.client_name, email: project.client_email },
         metadata: { project_id: project.id, type: 'UPGRADE' },
         back_urls: {
           success: baseUrl,
@@ -360,8 +360,11 @@ const server = http.createServer(async (req, res) => {
         auto_return: 'approved',
         notification_url: webhookUrl
       };
+      
+      console.log("[MercadoPago Upgrade] Creando preferencia de pago:", prefBody);
       const preference = await mpPreference.create({ body: prefBody });
-      return sendJson(res, 200, { success: true, init_point: preference.init_point });
+      console.log("[MercadoPago Upgrade] Preferencia creada exitosamente. ID:", preference.id);
+      return sendJson(res, 200, { success: true, init_point: preference.init_point || preference.sandbox_init_point });
     } catch (err) {
       console.error("[MercadoPago Error Upgrade]", err);
       return sendJson(res, 500, { success: false, error: 'Error al generar preferencia de upgrade.' });

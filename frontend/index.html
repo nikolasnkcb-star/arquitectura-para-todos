@@ -415,11 +415,8 @@
       </div>
 
       <div class="checkout-actions">
-        <button class="btn btn-success btn-lg btn-block" onclick="processPaymentSimulated('PAID')">
-          💳 SIMULAR PAGO EXITOSO Y ACTIVAR PROYECTO
-        </button>
-        <button class="btn btn-danger btn-sm" onclick="processPaymentSimulated('FAILED')">
-          Simular Pago Rechazado
+        <button class="btn btn-success btn-lg btn-block" onclick="processPayment()">
+          Proceder al Pago Seguro →
         </button>
       </div>
     </div>
@@ -465,8 +462,8 @@
       </div>
 
       <div class="checkout-actions">
-        <button class="btn btn-primary btn-block" onclick="processUpgradePaymentSimulated('PAID')">
-          💳 ACTUALIZAR A PREMIUM (PAGAR S/<span id="btnUpgradeAmount">200</span>)  
+        <button class="btn btn-primary btn-block" onclick="processUpgradePayment()">
+          Proceder al Pago Seguro (S/<span id="btnUpgradeAmount">200</span>) →
         </button>
       </div>
     </div>
