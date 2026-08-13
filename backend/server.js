@@ -13,6 +13,14 @@ const db = require('./db');
 const emailService = require('./services/email.service');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+
+// Forzar la versión de la API a 'v1beta'
+const model = genAI.getGenerativeModel(
+  { model: "gemini-1.5-flash" },
+  { apiVersion: "v1beta" }
+);
+
 try { require('dotenv').config(); } catch (e) {}
 let mpClient = null;
 let mpPreference = null;
@@ -150,14 +158,16 @@ Historial de conversación: ${JSON.stringify(history.slice(-6))} // últimos men
          });
       }
 
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+      const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
+      {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          contents: [{ role: 'user', parts: [{ text: systemPrompt }] }],
-          generationConfig: { responseMimeType: "application/json" }
+          contents: [{ parts: [{ text: prompt }] }]
         })
-      });
+      }
+    );
 
       const data = await response.json();
 
