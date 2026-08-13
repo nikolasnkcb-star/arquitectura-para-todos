@@ -99,7 +99,7 @@ const server = http.createServer(async (req, res) => {
     // Inicializar Gemini
     const apiKey = process.env.GEMINI_API_KEY || 'MISSING_API_KEY';
     const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" }, { apiVersion: "v1beta" });
 
     const systemPrompt = `
 Eres "Arqui IA", un arquitecto carismático, consultor comercial y especialista en el Reglamento Nacional de Edificaciones (RNE) del Perú. Trabajas para "Arquitectura Para Todos".
