@@ -11,6 +11,7 @@ const url = require('url');
 const { CONFIG, getActiveConfig, getUpgradePrice } = require('../config/packages.config');
 const db = require('./db');
 const emailService = require('./services/email.service');
+const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 try { require('dotenv').config(); } catch (e) {}
 let mpClient = null;
@@ -90,78 +91,136 @@ const server = http.createServer(async (req, res) => {
     return sendJson(res, 200, getActiveConfig());
   }
 
-  // 2. CHAT ARQUI IA (ETAPA GRATUITA)
+  // 2. CHAT ARQUI IA (ETAPA GRATUITA) - GEMINI AI
   if (pathname === '/api/aria/chat' && method === 'POST') {
     const body = await parseBody(req);
-    const { step = 0, message = '', projectData = {} } = body;
+    const { history = [], projectData = {} } = body;
 
-    const questions = [
-      { key: "maps", label: "UBICACIÓN", text: "¡Hola! 👋 Soy Arqui IA, tu arquitecta virtual de Arquitectura Para Todos. Estoy aquí para ayudarte a darle forma a tu casa soñada, paso a paso. Para empezar a visualizar el entorno, ¿podrías compartirme la ubicación general o el enlace de Google Maps de tu terreno?" },
-      { key: "dimensions", label: "MEDIDAS", text: "¡Perfecto, ya me ubiqué! Ahora necesito saber con cuánto espacio contamos. ¿Me podrías decir cuáles son las dimensiones aproximadas de tu terreno? (Ej. ¿Cuánto mide de frente y cuánto de fondo?)" },
-      { key: "slope", label: "TOPOGRAFÍA", text: "Entendido. Cada terreno tiene sus propias características. ¿Tu lote es completamente plano, o tiene algún tipo de desnivel o pendiente que debamos aprovechar en el diseño?" },
-      { key: "levels", label: "NIVELES", text: "¡Excelente! Empecemos a imaginar la forma de la casa. ¿Cuántos pisos te gustaría que tuviera? (Por ejemplo: 1 piso amplio, 2 pisos, o quizás 2 pisos más una linda azotea/terraza)." },
-      { key: "family", label: "FAMILIA", text: "Una casa debe diseñarse a medida de quienes la habitan. Cuéntame un poco sobre tu familia: ¿Cuántas personas vivirán allí y quiénes son? (Puedes incluir si tienen niños, adultos mayores o mascotas)." },
-      { key: "rooms", label: "AMBIENTES", text: "Sabiendo esto, ¿qué espacios consideras indispensables para que todos estén cómodos? Por ejemplo: número de dormitorios, si prefieres una cocina abierta o cerrada, estudio para teletrabajo, jardines, etc." },
-      { key: "budget", label: "PRESUPUESTO", text: "¡Qué buen concepto estamos armando! Para que nuestra propuesta sea totalmente realista y viable, ¿tienes algún presupuesto máximo pensado para la construcción? (Si no lo tienes claro aún, solo dime 'no sé' y yo haré un cálculo estimado por ti)." },
-      { key: "references", label: "ESTILO", text: "¡Genial! Por último, para captar exactamente tu gusto, ¿podrías describirme qué estilo de casa te atrae más? (Ej. moderno, rústico, techos inclinados, ventanales grandes). ¡Escribe todo lo que te imagines!" }
-    ];
+    // Inicializar Gemini
+    const apiKey = process.env.GEMINI_API_KEY || 'MISSING_API_KEY';
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-    const currentQ = questions[step];
+    const systemPrompt = `
+Eres "Arqui IA", un arquitecto carismático, consultor comercial y especialista en el Reglamento Nacional de Edificaciones (RNE) del Perú. Trabajas para "Arquitectura Para Todos".
+Tu objetivo es interactuar de manera fluida y amigable con el usuario para recopilar información técnica de su futuro proyecto (hasta 200 m²).
 
-    if (!currentQ || step >= questions.length) {
-      const width = parseFloat(projectData.lot_width) || 8;
-      const length = parseFloat(projectData.lot_length) || 20;
-      const lotArea = width * length;
-      const estBuilt = Math.round(lotArea * 1.6);
-      const estCostLow = Math.round(estBuilt * 1100);
-      const estCostHigh = Math.round(estBuilt * 1400);
+DEBES recopilar obligatoriamente estos 8 datos:
+1. location (Ubicación del terreno)
+2. dimensions (Medidas de frente y fondo)
+3. slope (Topografía: plano o pendiente)
+4. floors (Cantidad de niveles deseados)
+5. people (Quiénes conforman la familia o habitantes)
+6. rooms (Ambientes indispensables)
+7. budget (Presupuesto estimado, si no sabe puedes sugerir que lo estimarás)
+8. style (Estilo arquitectónico preferido)
 
-      const summaryData = {
-        lot_width: width,
-        lot_length: length,
-        lot_area: lotArea,
-        estimated_built_area: `${estBuilt} m²`,
-        estimated_budget: `S/${estCostLow.toLocaleString()} - S/${estCostHigh.toLocaleString()}`,
-        architectural_style: "Contemporáneo Integrado (Líneas puras, iluminación natural, ventilación cruzada)",
-        program_summary: "Zona social integrada (Sala-Comedor-Cocina), 3 Dormitorios (1 Principal en suite), Terraza vivible, Lavandería independiente.",
-        is_complex: lotArea > 180 || (projectData.levels || '').includes('3')
-      };
+REGLAS DE INTERACCIÓN:
+- Sé conversacional, no lances todas las preguntas de golpe. Haz 1 o 2 preguntas a la vez.
+- Adapta tus respuestas según lo que el usuario diga (ej. si mencionan perros, diles que considerarás un espacio para mascotas).
+- Trata de vender sutilmente los beneficios del "Paquete Básico" (S/ 500) y el "Paquete Premium" (S/ 900).
+- La conversación debe sentirse natural.
 
-      const project = db.createProject({
-        client_name: projectData.name || 'Cliente Arqui IA',
-        client_email: projectData.email || 'cliente@arqui.pe',
-        project_name: `Casa ${projectData.name || 'Unifamiliar'}`,
-        maps_url: projectData.maps || '',
-        lot_width: width,
-        lot_length: length,
-        slope: projectData.slope || 'Plano',
-        levels_desired: projectData.levels || '2 pisos',
-        family_needs: projectData.family || 'Familia unifamiliar',
-        required_rooms: projectData.rooms || '3 dormitorios, sala, comedor, cocina',
-        budget_approx: projectData.budget || `S/${estCostLow.toLocaleString()}`,
-        architectural_program: summaryData.program_summary,
-        conceptual_proposal: summaryData.architectural_style,
-        reference_budget: summaryData.estimated_budget,
-        ai_recommendation: summaryData.is_complex ? 'PREMIUM' : 'BASIC'
+INSTRUCCIONES DE SALIDA (ESTRICTAS):
+Debes responder SIEMPRE con un objeto JSON válido con la siguiente estructura:
+{
+  "reply": "Tu mensaje para el usuario (usa emojis, sé amigable).",
+  "extractedData": {
+    "location": "...",
+    "dimensions": "...",
+    "slope": "...",
+    "floors": "...",
+    "people": "...",
+    "rooms": "...",
+    "budget": "...",
+    "style": "..."
+  },
+  "progress": 25, // Un número del 0 al 100 estimando cuánto de los 8 datos tienes completos.
+  "finished": false // Pon true SOLO cuando tengas los 8 datos completamente definidos con confianza.
+}
+
+Datos actuales recopilados: ${JSON.stringify(projectData)}
+Historial de conversación: ${JSON.stringify(history.slice(-6))} // últimos mensajes
+`;
+
+    try {
+      if (apiKey === 'MISSING_API_KEY') {
+         return sendJson(res, 200, {
+           reply: "⚠️ No se ha configurado la API Key de Gemini. Por favor, configura process.env.GEMINI_API_KEY.",
+           finished: false,
+           progress: 0
+         });
+      }
+
+      const result = await model.generateContent({
+        contents: [{ role: "user", parts: [{ text: systemPrompt }] }],
+        generationConfig: { responseMimeType: "application/json" }
       });
+      
+      const responseText = result.response.text();
+      const aiResponse = JSON.parse(responseText);
+
+      // Si terminó, crear el proyecto
+      if (aiResponse.finished) {
+        const pd = aiResponse.extractedData || {};
+        
+        const width = parseFloat((pd.dimensions || '').match(/\d+(\.\d+)?/g)?.[0]) || 8;
+        const length = parseFloat((pd.dimensions || '').match(/\d+(\.\d+)?/g)?.[1]) || 20;
+        const lotArea = width * length;
+        const estBuilt = Math.round(lotArea * 1.6);
+        const estCostLow = Math.round(estBuilt * 1100);
+        const estCostHigh = Math.round(estBuilt * 1400);
+
+        const summaryData = {
+          lot_width: width,
+          lot_length: length,
+          lot_area: lotArea,
+          estimated_built_area: `${estBuilt} m²`,
+          estimated_budget: `S/${estCostLow.toLocaleString()} - S/${estCostHigh.toLocaleString()}`,
+          architectural_style: pd.style || "Contemporáneo",
+          program_summary: pd.rooms || "Ambientes básicos",
+          is_complex: lotArea > 180 || (pd.floors || '').includes('3')
+        };
+
+        const project = db.createProject({
+          client_name: 'Cliente Arqui IA',
+          client_email: 'cliente@arqui.pe',
+          project_name: `Casa ${pd.location || 'Unifamiliar'}`,
+          maps_url: pd.location || '',
+          lot_width: width,
+          lot_length: length,
+          slope: pd.slope || 'Plano',
+          levels_desired: pd.floors || '2 pisos',
+          family_needs: pd.people || 'Familia unifamiliar',
+          required_rooms: pd.rooms || '3 dormitorios, sala, comedor, cocina',
+          budget_approx: pd.budget || `S/${estCostLow.toLocaleString()}`,
+          architectural_program: summaryData.program_summary,
+          conceptual_proposal: summaryData.architectural_style,
+          reference_budget: summaryData.estimated_budget,
+          ai_recommendation: summaryData.is_complex ? 'PREMIUM' : 'BASIC'
+        });
+
+        return sendJson(res, 200, {
+          success: true,
+          finished: true,
+          project,
+          summary: summaryData,
+          reply: aiResponse.reply || "¡Excelente! He analizado toda tu información."
+        });
+      }
 
       return sendJson(res, 200, {
         success: true,
-        finished: true,
-        project,
-        summary: summaryData,
-        message: "¡Excelente! Arqui IA ha analizado toda tu información y ha generado el expediente conceptual gratuito."
+        finished: false,
+        reply: aiResponse.reply,
+        extractedData: aiResponse.extractedData,
+        progress: aiResponse.progress
       });
-    }
 
-    return sendJson(res, 200, {
-      success: true,
-      finished: false,
-      step: step + 1,
-      totalSteps: questions.length,
-      nextQuestion: currentQ.text,
-      currentLabel: currentQ.label
-    });
+    } catch (err) {
+      console.error("[Gemini API Error]", err);
+      return sendJson(res, 500, { success: false, error: "Error en la IA." });
+    }
   }
 
   // 3. RECOMENDADOR ARQUI IA

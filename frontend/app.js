@@ -8,7 +8,7 @@ const state = {
   currentProjectId: null,
   currentProject: null,
   selectedPackageCode: null,
-  chatStep: 0,
+  chatHistory: [],
   chatProjectData: {},
   adminFilter: 'ALL',
   adminProjects: [],
@@ -66,11 +66,11 @@ function navTo(sectionId) {
 // Iniciar Etapa Gratuita con Arqui IA
 function startFreeStage() {
   navTo('freeStage');
-  state.chatStep = 0;
+  state.chatHistory = [];
   state.chatProjectData = {};
   document.getElementById('chatMessages').innerHTML = '';
   document.getElementById('projectSummaryData').innerHTML = '<p class="empty-state">Arqui IA irá organizando aquí la ficha técnica de tu terreno y vivienda.</p>';
-  sendChatMessage('');
+  sendChatMessage();
 }
 
 async function sendChatMessage(userText) {
@@ -80,24 +80,7 @@ async function sendChatMessage(userText) {
   if (userText) {
     appendMessage('user', userText);
     input.value = '';
-
-    // FASE 1: Guardar respuestas del usuario estructuradamente
-    const step = state.chatStep;
-    if (step === 1) state.chatProjectData.maps = userText;
-    else if (step === 2) {
-      state.chatProjectData.dimensions_raw = userText;
-      const nums = userText.match(/\d+(\.\d+)?/g);
-      if (nums && nums.length >= 2) {
-        state.chatProjectData.lot_width = parseFloat(nums[0]);
-        state.chatProjectData.lot_length = parseFloat(nums[1]);
-      }
-    }
-    else if (step === 3) state.chatProjectData.slope = userText;
-    else if (step === 4) state.chatProjectData.levels = userText;
-    else if (step === 5) state.chatProjectData.family = userText;
-    else if (step === 6) state.chatProjectData.rooms = userText;
-    else if (step === 7) state.chatProjectData.budget = userText;
-    else if (step === 8) state.chatProjectData.references = userText;
+    state.chatHistory.push({ role: 'user', content: userText });
   }
 
   typingDiv.classList.remove('hidden');
@@ -107,14 +90,22 @@ async function sendChatMessage(userText) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        step: state.chatStep,
-        message: userText,
+        history: state.chatHistory,
         projectData: state.chatProjectData
       })
     });
 
     const data = await res.json();
     typingDiv.classList.add('hidden');
+
+    if (data.reply) {
+      appendMessage('aria', data.reply, false);
+      state.chatHistory.push({ role: 'assistant', content: data.reply });
+    }
+
+    if (data.extractedData) {
+      state.chatProjectData = { ...state.chatProjectData, ...data.extractedData };
+    }
 
     if (data.finished) {
       state.currentProjectId = data.project.id;
@@ -123,10 +114,10 @@ async function sendChatMessage(userText) {
       const techSheetHtml = `
         <div class="tech-sheet">
           <div class="tech-sheet-header">Ficha de Anteproyecto</div>
-          <div class="tech-sheet-row"><span class="tech-sheet-label">Ubicación:</span><span class="tech-sheet-value">${state.chatProjectData.location || 'No especificada'}</span></div>
-          <div class="tech-sheet-row"><span class="tech-sheet-label">Terreno:</span><span class="tech-sheet-value">${state.chatProjectData.dimensions || 'No especificado'}</span></div>
-          <div class="tech-sheet-row"><span class="tech-sheet-label">Niveles:</span><span class="tech-sheet-value">${state.chatProjectData.floors || '1'}</span></div>
-          <div class="tech-sheet-row"><span class="tech-sheet-label">Habitantes:</span><span class="tech-sheet-value">${state.chatProjectData.people || 'Familia'}</span></div>
+          <div class="tech-sheet-row"><span class="tech-sheet-label">Ubicación:</span><span class="tech-sheet-value">${state.chatProjectData.location || state.chatProjectData.maps || 'No especificada'}</span></div>
+          <div class="tech-sheet-row"><span class="tech-sheet-label">Terreno:</span><span class="tech-sheet-value">${state.chatProjectData.dimensions || state.chatProjectData.dimensions_raw || 'No especificado'}</span></div>
+          <div class="tech-sheet-row"><span class="tech-sheet-label">Niveles:</span><span class="tech-sheet-value">${state.chatProjectData.floors || state.chatProjectData.levels || '1'}</span></div>
+          <div class="tech-sheet-row"><span class="tech-sheet-label">Habitantes:</span><span class="tech-sheet-value">${state.chatProjectData.people || state.chatProjectData.family || 'Familia'}</span></div>
           <div class="tech-sheet-row"><span class="tech-sheet-label">Presupuesto:</span><span class="tech-sheet-value">${state.chatProjectData.budget || 'Referencial'}</span></div>
           
           <div class="rne-seal" style="margin-top:1.5rem; justify-content:center; display:flex;">
@@ -139,29 +130,24 @@ async function sendChatMessage(userText) {
         </div>
       `;
 
-      appendMessage('aria', "¡Entiendo perfectamente! Qué emocionante proyecto familiar. He analizado todos tus requerimientos y he estructurado la siguiente Ficha Técnica para nosotros. Dale una mirada a las opciones para empezar:", false);
       appendMessage('aria', techSheetHtml, true);
-      
+      document.getElementById('projectSummaryData').innerHTML = techSheetHtml;
+
+      const packagesSection = document.getElementById('packagesSection');
+      if (packagesSection) packagesSection.classList.remove('hidden');
+
       setTimeout(() => {
-        showWhatsAppModal();
-      }, 4000);
+        if (packagesSection) packagesSection.scrollIntoView({ behavior: 'smooth' });
+      }, 1500);
+      
+      document.getElementById('chatProgressBar').style.width = '100%';
+      document.getElementById('chatProgressText').textContent = 'Progreso: 100%';
       return;
     }
 
-    if (data.nextQuestion) {
-      appendMessage('aria', data.nextQuestion);
-    } else if (data.message) {
-      appendMessage('aria', data.message);
-    }
-
-    state.chatStep = data.step || (state.chatStep + 1);
-    const pct = Math.min(100, Math.round((state.chatStep / 8) * 100));
+    const pct = data.progress || Math.min(95, state.chatHistory.length * 10);
     document.getElementById('chatProgressBar').style.width = pct + '%';
     document.getElementById('chatProgressText').textContent = `Progreso: ${pct}%`;
-
-    if (userText) {
-      updateSummaryFacts(userText);
-    }
 
   } catch (err) {
     typingDiv.classList.add('hidden');
