@@ -96,14 +96,14 @@ const server = http.createServer(async (req, res) => {
     const { step = 0, message = '', projectData = {} } = body;
 
     const questions = [
-      { key: "maps", label: "UBICACIÓN", text: "¡Hola! 👋 Soy Arqui IA, tu arquitecta virtual de Arquitectura Para Todos. Te ayudaré a descubrir y definir tu casa soñada. Para comenzar, ¿cuál es la ubicación general o enlace de Google Maps de tu terreno?" },
-      { key: "dimensions", label: "MEDIDAS", text: "Excelente. Cuéntame las dimensiones del terreno: ¿cuánto mide de frente (ancho) y cuánto de fondo (largo)?" },
-      { key: "slope", label: "TOPOGRAFÍA", text: "Entendido. ¿Tu terreno es completamente plano o tiene alguna pendiente ligera o pronunciada?" },
-      { key: "levels", label: "NIVELES", text: "Perfecto. ¿Cuántos pisos te imaginas para tu vivienda? (ejemplo: 1 piso, 2 pisos, 2 pisos + terraza)." },
-      { key: "family", label: "FAMILIA", text: "Ahora hablemos de tu familia. ¿Cuántas personas habitarán la casa y quiénes son?" },
-      { key: "rooms", label: "AMBIENTES", text: "¿Cuántos dormitorios necesitas y qué otros ambientes consideras indispensables (sala, comedor, cocina abierta/cerrada, estudio, lavandería)?" },
-      { key: "budget", label: "PRESUPUESTO", text: "¿Tienes algún presupuesto referencial estimado para la construcción? (Si no lo sabes, dime 'no sé' y lo estimaremos)." },
-      { key: "references", label: "REFERENCIAS", text: "¡Genial! Por último, sube o describe imágenes de referencia que te gusten. Analizaré la materialidad, volumetría y lenguaje arquitectónico." }
+      { key: "maps", label: "UBICACIÓN", text: "¡Hola! 👋 Soy Arqui IA, tu arquitecta virtual de Arquitectura Para Todos. Estoy aquí para ayudarte a darle forma a tu casa soñada, paso a paso. Para empezar a visualizar el entorno, ¿podrías compartirme la ubicación general o el enlace de Google Maps de tu terreno?" },
+      { key: "dimensions", label: "MEDIDAS", text: "¡Perfecto, ya me ubiqué! Ahora necesito saber con cuánto espacio contamos. ¿Me podrías decir cuáles son las dimensiones aproximadas de tu terreno? (Ej. ¿Cuánto mide de frente y cuánto de fondo?)" },
+      { key: "slope", label: "TOPOGRAFÍA", text: "Entendido. Cada terreno tiene sus propias características. ¿Tu lote es completamente plano, o tiene algún tipo de desnivel o pendiente que debamos aprovechar en el diseño?" },
+      { key: "levels", label: "NIVELES", text: "¡Excelente! Empecemos a imaginar la forma de la casa. ¿Cuántos pisos te gustaría que tuviera? (Por ejemplo: 1 piso amplio, 2 pisos, o quizás 2 pisos más una linda azotea/terraza)." },
+      { key: "family", label: "FAMILIA", text: "Una casa debe diseñarse a medida de quienes la habitan. Cuéntame un poco sobre tu familia: ¿Cuántas personas vivirán allí y quiénes son? (Puedes incluir si tienen niños, adultos mayores o mascotas)." },
+      { key: "rooms", label: "AMBIENTES", text: "Sabiendo esto, ¿qué espacios consideras indispensables para que todos estén cómodos? Por ejemplo: número de dormitorios, si prefieres una cocina abierta o cerrada, estudio para teletrabajo, jardines, etc." },
+      { key: "budget", label: "PRESUPUESTO", text: "¡Qué buen concepto estamos armando! Para que nuestra propuesta sea totalmente realista y viable, ¿tienes algún presupuesto máximo pensado para la construcción? (Si no lo tienes claro aún, solo dime 'no sé' y yo haré un cálculo estimado por ti)." },
+      { key: "references", label: "ESTILO", text: "¡Genial! Por último, para captar exactamente tu gusto, ¿podrías describirme qué estilo de casa te atrae más? (Ej. moderno, rústico, techos inclinados, ventanales grandes). ¡Escribe todo lo que te imagines!" }
     ];
 
     const currentQ = questions[step];
